@@ -43,4 +43,9 @@ public class Meal {
     public LocalTime getTime() {
         return dateTime.toLocalTime();
     }
+
+    public Integer getId() {
+        return id;
+    }
+
 }

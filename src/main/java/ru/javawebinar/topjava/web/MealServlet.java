@@ -19,4 +19,9 @@ public class MealServlet extends HttpServlet {
         request.setAttribute("meals", MealsUtil.getTos(MealsUtil.meals, MealsUtil.DEFAULT_CALORIES_PER_DAY));
         request.getRequestDispatcher("/meals.jsp").forward(request, response);
     }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        log.info("getAll");
+    }
 }
