@@ -26,7 +26,10 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal save(Meal meal) {
-        return repository.putIfAbsent(counter.getAndIncrement(), meal);
+        if (meal.isNew()) {
+            meal.setId(counter.getAndIncrement());
+        }
+        return repository.put(meal.getId(), meal);
     }
 
     @Override
