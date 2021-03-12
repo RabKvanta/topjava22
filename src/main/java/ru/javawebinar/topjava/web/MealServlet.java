@@ -27,8 +27,8 @@ public class MealServlet extends HttpServlet {
         log.info("getAll");
         String action = request.getParameter("action");
         if (action == null) {
-       //     request.setAttribute("meals", MealsUtil.getTos(MealsUtil.meals, MealsUtil.DEFAULT_CALORIES_PER_DAY));
-            request.setAttribute("meals", new ArrayList<>(repository.getAll()));
+            request.setAttribute("meals", MealsUtil.getTos(repository.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY));
+       //     request.setAttribute("meals", new ArrayList<>(repository.getAll()));
             request.getRequestDispatcher("/meals.jsp").forward(request, response);
         }
     }
