@@ -53,6 +53,6 @@ public class Meal {
     }
 
     public boolean isNew() {
-        return (id == null);
+        return id == null;
     }
 }
