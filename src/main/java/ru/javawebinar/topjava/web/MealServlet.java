@@ -2,6 +2,7 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.InMemoryMealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
@@ -10,12 +11,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
     InMemoryMealRepository repository;
+
     @Override
     public void init() throws ServletException {
         super.init();
@@ -24,17 +29,41 @@ public class MealServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.info("getAll");
+
         String action = request.getParameter("action");
-        if (action == null) {
-            request.setAttribute("meals", MealsUtil.getTos(repository.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY));
-       //     request.setAttribute("meals", new ArrayList<>(repository.getAll()));
-            request.getRequestDispatcher("/meals.jsp").forward(request, response);
+        switch (action == null ? "all" : action) {
+            case "delete":
+                int id = getId(request);
+                log.info("Delete {}", id);
+                repository.delete(id);
+                response.sendRedirect("meals");
+                break;
+            case "update":
+            case "create":
+                final Meal meal = action.equals("create") ?
+                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
+                        repository.get(getId(request));
+                request.setAttribute("meal", meal);
+                request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
+                break;
+            case "all":
+            default:
+                log.info("getAll");
+                request.setAttribute("meals", MealsUtil.getTos(repository.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY));
+                //     request.setAttribute("meals", new ArrayList<>(repository.getAll()));
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                break;
+
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         log.info("getAll");
+    }
+
+    private int getId(HttpServletRequest request) {
+        String paramId = Objects.requireNonNull(request.getParameter("id"));
+        return Integer.parseInt(paramId);
     }
 }
