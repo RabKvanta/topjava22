@@ -1,9 +1,9 @@
 package ru.javawebinar.topjava.repository.inmemory;
 
-import ru.javawebinar.topjava.model.AbstractNamedEntity;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,47 +16,41 @@ public class InMemoryMealRepository implements MealRepository {
 
     {
         for (Meal meal : MealsUtil.meals) {
-            save(meal, meal.getUserId());
+            save(meal);
         }
     }
 
     @Override
-    public Meal save(Meal meal, int userId) {
+    public Meal save(Meal meal) {
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            meal.setUserId(userId);
-            repository.put(meal.getId(), meal);
-            return meal;
+            meal.setUserId(SecurityUtil.authUserId());
         }
         // handle case: update, but not present in storage
-
-        return meal.getUserId() == userId ?
-                repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal) : null;
+        return meal.getUserId() == SecurityUtil.authUserId() ?
+                repository.put(meal.getId(), meal) : null;
     }
 
     @Override
-    public boolean delete(int id, int userId) {
-        return repository.get(id).getUserId() == userId ? repository.remove(id) != null : false;
+    public boolean delete(int id) {
+        return repository.get(id).getUserId() == SecurityUtil.authUserId() ? repository.remove(id) != null : false;
     }
 
     @Override
-    public Meal get(int id, int userId) {
+    public Meal get(int id) {
         Meal meal = repository.get(id);
-        return repository.get(id).getUserId() == userId ? meal : null;
+        return repository.get(id).getUserId() == SecurityUtil.authUserId() ? meal : null;
     }
 
     @Override
-    public Collection<Meal> getAll(int userId) {
+    public Collection<Meal> getAll() {
 
         List<Meal> meals = repository.values()
                 .stream()
-                .filter(m->m.getUserId() == userId)
+                .filter(m -> m.getUserId() == SecurityUtil.authUserId())
                 .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList());
-
-
-        return meals.get(0).getUserId() == userId ? meals : null;
+        return meals.get(0).getUserId() == SecurityUtil.authUserId() ? meals : new ArrayList<Meal>();
     }
-
 }
 
