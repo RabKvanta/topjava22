@@ -1,20 +1,25 @@
 package ru.javawebinar.topjava.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.repository.UserRepository;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
 import static ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepository.USER_ID;
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFound;
+
+import static ru.javawebinar.topjava.util.DateTimeUtil.getEndExclusive;
+import static ru.javawebinar.topjava.util.DateTimeUtil.getStartInclusive;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
+@Service
 public class MealService {
 
-    private MealRepository repository;
+    private final MealRepository repository;
 
     public MealService(MealRepository repository) {
         this.repository = repository;
@@ -38,6 +43,10 @@ public class MealService {
 
     public void update(Meal meal) {
         checkNotFoundWithId(repository.save(meal, USER_ID), meal.getId());
+    }
+
+    public List<Meal> getBetweenHalfOpen(LocalDate startDate, LocalDate endDate, int userId) {
+        return repository.getBetweenHalfOpen(getStartInclusive(startDate), getEndExclusive(endDate), userId);
     }
 
 }
