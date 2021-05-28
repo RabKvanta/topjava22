@@ -63,6 +63,7 @@ _Антуан де Сент-Экзюпери_
     - **[15 тривиальных фактов о правильной работе с протоколом HTTP](https://habrahabr.ru/company/yandex/blog/265569/)**
     - **<a href="https://medium.com/@mwaysolutions/10-best-practices-for-better-restful-api-cbe81b06f291">10 Best Practices for Better RESTful API</a>**
     - [REST resource hierarchy](https://stackoverflow.com/questions/20951419/what-are-best-practices-for-rest-nested-resources)
+    - [Лучшие практики разработки REST API: правила 1-7,15-17](https://tproger.ru/translations/luchshie-praktiki-razrabotki-rest-api-20-sovetov/)
 - 10: не смешивайте TO и Entity вместе. Лучше всего, если они будут независимыми друг от друга.
 - 11: не размещайте логику приложения и преобразования в TO в слое доступа к DB
 - 12: если приложению в объекте требуется только его id, используйте reference (как мы при сохранении еды вставляем туда юзера)
